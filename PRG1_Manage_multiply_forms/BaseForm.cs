@@ -8,12 +8,45 @@ namespace PRG1_Manage_multiply_forms
             Home home = new Home();
             home.MdiParent = this;
             home.WindowState = FormWindowState.Maximized;
+            home.DataSend += Pages_DataSend;
             home.Show();
         }
+
+        internal void Pages_DataSend(string data, string target, string from)
+        {
+            switch (target)
+            {
+                case "Products":
+                    OpenFormWithData<Products>(data, target, from);
+                    break;
+                case "About":
+                    OpenFormWithData<About>(data, target, from);
+                    break;
+                case "Contact":
+                    OpenFormWithData<Contact>(data, target, from);
+                    break;
+                case "Home":
+                    OpenFormWithData<Home>(data, target, from);
+                    break;
+            }
+        }
+        private void OpenFormWithData<T>(string data, string target, string from) where T : Form, new()
+        {
+            CloseNotActiveForms(typeof(T));
+
+            if (!FormAlreadyOpen(typeof(T)))
+            {
+                T form = new T();
+                form.MdiParent = this;
+                form.WindowState = FormWindowState.Maximized;
+                (form as dynamic).ReceiveData(data, from);
+                form.Show();
+            }
+        }
+
         protected override void OnMdiChildActivate(EventArgs e)
         {
             base.OnMdiChildActivate(e);
-            // Sätt titeln till 'Mitt program' varje gång ett barnformulär aktiveras eller inaktiveras
             this.Text = "Mitt program";
         }
 
@@ -26,6 +59,7 @@ namespace PRG1_Manage_multiply_forms
                 Home home = new Home();
                 home.MdiParent = this;
                 home.WindowState = FormWindowState.Maximized;
+                home.DataSend += Pages_DataSend;
                 home.Show();
             }
         }
